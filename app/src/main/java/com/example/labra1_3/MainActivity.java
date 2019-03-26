@@ -23,9 +23,6 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        StrictMode.ThreadPolicy policy =
-                new StrictMode.ThreadPolicy.Builder().permitAll().build();
-        StrictMode.setThreadPolicy(policy);
 
         final EditText editText = findViewById(R.id.edit_text);
         Button button = findViewById(R.id.go_button);
@@ -36,13 +33,9 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 try {
                     URL url = new URL(editText.getText().toString());
-                    HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
-                    InputStream in = new BufferedInputStream(urlConnection.getInputStream());
-                    String htmlString = convertStreamToString(in);
-                    textView.setText(htmlString);
+                    DownloadFilesTask task = new DownloadFilesTask();
+                    task.execute(url);
                 } catch (MalformedURLException e) {
-                    e.printStackTrace();
-                } catch (IOException e) {
                     e.printStackTrace();
                 }
 
@@ -54,6 +47,10 @@ public class MainActivity extends AppCompatActivity {
     static String convertStreamToString(java.io.InputStream is) {
         java.util.Scanner scanner = new java.util.Scanner(is).useDelimiter("\\A");
         return scanner.hasNext() ? scanner.next() : "";
+    }
+
+    public void downloadDone() {
+
     }
 
 }
