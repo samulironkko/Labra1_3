@@ -17,23 +17,43 @@ public class DownloadFilesTask extends AsyncTask <URL, Void, String> {
 
 
     interface OnDownloadProgressUpdate {
-        void downloadDone();
+        void downloadDone(String s);
+    }
+
+    private OnDownloadProgressUpdate callBack;
+
+    public OnDownloadProgressUpdate getCallBack() {
+        return callBack;
+    }
+
+    public void setCallBack(OnDownloadProgressUpdate callBack) {
+        this.callBack = callBack;
     }
 
 
     @Override
     protected String doInBackground(URL... url) {
         String htmlString = null;
-        try {
-            HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
-            InputStream in = new BufferedInputStream(urlConnection.getInputStream());
-            htmlString = convertStreamToString(in);
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
+        int count = url.length;
+        for (int i = 0; i < count; i++) {
+            try {
+                HttpURLConnection urlConnection = (HttpURLConnection) url[i].openConnection();
+                InputStream in = new BufferedInputStream(urlConnection.getInputStream());
+                htmlString = convertStreamToString(in);
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
 
         return htmlString;
+    }
+
+    @Override
+    protected void onPostExecute(String s) {
+        if (callBack != null) {
+            callBack.downloadDone(s);
+        }
     }
 }

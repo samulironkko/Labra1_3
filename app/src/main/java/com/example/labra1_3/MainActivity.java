@@ -16,7 +16,9 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements DownloadFilesTask.OnDownloadProgressUpdate {
+
+    TextView textView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,7 +28,7 @@ public class MainActivity extends AppCompatActivity {
 
         final EditText editText = findViewById(R.id.edit_text);
         Button button = findViewById(R.id.go_button);
-        final TextView textView = findViewById(R.id.text_view);
+        textView = findViewById(R.id.text_view);
 
         button.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -34,6 +36,7 @@ public class MainActivity extends AppCompatActivity {
                 try {
                     URL url = new URL(editText.getText().toString());
                     DownloadFilesTask task = new DownloadFilesTask();
+                    task.setCallBack(MainActivity.this);
                     task.execute(url);
                 } catch (MalformedURLException e) {
                     e.printStackTrace();
@@ -43,14 +46,14 @@ public class MainActivity extends AppCompatActivity {
         });
 
     }
-
     static String convertStreamToString(java.io.InputStream is) {
         java.util.Scanner scanner = new java.util.Scanner(is).useDelimiter("\\A");
         return scanner.hasNext() ? scanner.next() : "";
     }
 
-    public void downloadDone() {
-
+    @Override
+    public void downloadDone(String s) {
+        textView.setText(s);
     }
 
 }
